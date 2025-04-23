@@ -4,8 +4,9 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Home } from "lucide-react"
 import Link from "next/link"
+import { Suspense } from "react"
 
-export default function NotFound() {
+function NotFoundContent() {
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-72px)] md:min-h-[calc(100vh-64px)] py-8">
       <div className="max-w-md w-full px-4">
@@ -49,5 +50,13 @@ export default function NotFound() {
         <div className="text-gray-500 text-sm">Erro 404 | Página não encontrada</div>
       </div>
     </div>
+  )
+}
+
+export default function NotFound() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}>
+      <NotFoundContent />
+    </Suspense>
   )
 }
