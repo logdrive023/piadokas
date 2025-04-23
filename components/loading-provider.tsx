@@ -3,7 +3,7 @@
 // Vamos fazer uma correção mais robusta para resolver o problema do loop infinito
 // especialmente quando voltamos para a página inicial
 
-import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, useRef, type ReactNode, Suspense } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 import PageLoading from "./page-loading"
 
@@ -27,7 +27,7 @@ interface LoadingProviderProps {
   children: ReactNode
 }
 
-export function LoadingProvider({ children }: LoadingProviderProps) {
+function LoadingProviderContent({ children }: LoadingProviderProps) {
   const [isLoading, setIsLoading] = useState(false)
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -126,6 +126,14 @@ export function LoadingProvider({ children }: LoadingProviderProps) {
       {isLoading && <PageLoading />}
       {children}
     </LoadingContext.Provider>
+  )
+}
+
+export function LoadingProvider({ children }: LoadingProviderProps) {
+  return (
+    <Suspense fallback={<PageLoading />}>
+      <LoadingProviderContent>{children}</LoadingProviderContent>
+    </Suspense>
   )
 }
 

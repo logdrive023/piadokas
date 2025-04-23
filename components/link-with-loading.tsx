@@ -6,14 +6,14 @@ import type { ReactNode } from "react"
 import Link, { type LinkProps } from "next/link"
 import { useLoading } from "./loading-provider"
 import { usePathname } from "next/navigation"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, Suspense } from "react"
 
 interface LinkWithLoadingProps extends LinkProps {
   children: ReactNode
   className?: string
 }
 
-export function LinkWithLoading({ children, className, href, ...props }: LinkWithLoadingProps) {
+function LinkWithLoadingContent({ children, className, href, ...props }: LinkWithLoadingProps) {
   const { startLoading } = useLoading()
   const pathname = usePathname()
   const scrollToTopRef = useRef(false)
@@ -53,6 +53,14 @@ export function LinkWithLoading({ children, className, href, ...props }: LinkWit
     <Link href={href} className={className} onClick={handleClick} {...props}>
       {children}
     </Link>
+  )
+}
+
+export function LinkWithLoading(props: LinkWithLoadingProps) {
+  return (
+    <Suspense fallback={props.children}>
+      <LinkWithLoadingContent {...props} />
+    </Suspense>
   )
 }
 
