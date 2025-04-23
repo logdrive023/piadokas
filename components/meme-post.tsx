@@ -1,0 +1,242 @@
+"use client"
+
+import { useState } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { ArrowBigDown, ArrowBigUp, MessageSquare, AlertCircle } from "lucide-react"
+import CommentSection from "@/components/comment-section"
+import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useAuth } from "@/lib/auth-context"
+import { useRouter } from "next/navigation"
+import ShareButtons from "@/components/share-buttons"
+import LinkWithLoading from "./link-with-loading"
+import { useLoading } from "./loading-provider"
+
+interface MemePostProps {
+  id: string | number
+  title: string
+  content?: string
+  author: string
+  authorId: string | number
+  timestamp: Date | string
+  imageUrl: string
+  isVideo?: boolean
+  likes: number
+  comments: number
+  tags?: string[]
+  compact?: boolean
+}
+
+export function MemePost({
+  id,
+  title,
+  content,
+  author,
+  authorId,
+  timestamp,
+  imageUrl,
+  isVideo = false,
+  likes: initialLikes,
+  comments: commentCount,
+  tags = [],
+  compact = false,
+}: MemePostProps) {
+  const [likes, setLikes] = useState(initialLikes)
+  const [userVote, setUserVote] = useState<"up" | "down" | null>(null)
+  const [showComments, setShowComments] = useState(false)
+  const [showLoginAlert, setShowLoginAlert] = useState(false)
+  const { isLoggedIn } = useAuth()
+  const router = useRouter()
+  const { startLoading } = useLoading()
+
+  const handleVote = (direction: "up" | "down") => {
+    if (!isLoggedIn) {
+      setShowLoginAlert(true)
+      return
+    }
+
+    if (userVote === direction) {
+      setUserVote(null)
+      setLikes(direction === "up" ? likes - 1 : likes + 1)
+    } else {
+      if (userVote) {
+        // Change vote direction
+        setLikes(direction === "up" ? likes + 2 : likes - 2)
+      } else {
+        // New vote
+        setLikes(direction === "up" ? likes + 1 : likes - 1)
+      }
+      setUserVote(direction)
+    }
+  }
+
+  if (compact) {
+    return (
+      <div className="flex flex-col sm:flex-row gap-4 bg-gray-800 rounded-lg overflow-hidden w-full">
+        <div className="w-full sm:w-40 h-40 relative">
+          {isVideo ? (
+            <video className="w-full h-full object-cover" poster={imageUrl}>
+              <source src="#" type="video/mp4" />
+            </video>
+          ) : (
+            <img src={imageUrl || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
+          )}
+        </div>
+        <div className="p-4 flex-1 flex flex-col justify-between">
+          <div>
+            <h3 className="text-lg font-medium text-white line-clamp-2">{title}</h3>
+            <div className="flex items-center gap-2 mt-1">
+              <Avatar className="h-5 w-5">
+                <AvatarImage src={`/abstract-user-icon.png?height=40&width=40&query=user avatar ${authorId}`} />
+                <AvatarFallback>{(author && author[0]) || "U"}</AvatarFallback>
+              </Avatar>
+              <LinkWithLoading href={`/user/${authorId}`} className="text-sm text-gray-400 hover:text-gray-300">
+                @{author}
+              </LinkWithLoading>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center text-sm text-gray-300">
+                <ArrowBigUp className="h-4 w-4 mr-1 text-green-500" />
+                {likes}
+              </span>
+              <span className="flex items-center text-sm text-gray-300">
+                <MessageSquare className="h-4 w-4 mr-1 text-blue-500" />
+                {commentCount}
+              </span>
+            </div>
+            <ShareButtons url={`https://memeverse.com/post/${id}`} title={title} compact />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <Card className="overflow-hidden bg-gray-800 border-gray-700">
+      <div className="p-4 border-b border-gray-700">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center">
+            <Avatar className="h-6 w-6 mr-2">
+              <AvatarImage src={`/abstract-user-icon.png?height=40&width=40&query=user avatar ${authorId}`} />
+              <AvatarFallback>{(author && author[0]) || "U"}</AvatarFallback>
+            </Avatar>
+            <LinkWithLoading href={`/user/${authorId}`} className="text-sm font-medium hover:underline mr-2 text-white">
+              {author}
+            </LinkWithLoading>
+            <span className="text-xs text-gray-400">
+              {typeof timestamp === "string"
+                ? timestamp
+                : timestamp.toLocaleString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+            </span>
+          </div>
+          <ShareButtons url={`https://memeverse.com/post/${id}`} title={title} compact />
+        </div>
+        <h2 className="text-xl font-bold mb-2 text-white">{title}</h2>
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {tags.map((tag, index) => (
+              <Badge key={index} variant="secondary" className="text-xs bg-gray-700 text-gray-300">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <CardContent className="p-0">
+        {isVideo ? (
+          <div className="aspect-video bg-gray-900 relative">
+            <video className="w-full h-full object-contain" controls poster={imageUrl}>
+              <source src="#" type="video/mp4" />
+              Seu navegador não suporta vídeos.
+            </video>
+          </div>
+        ) : (
+          <div className="aspect-video bg-gray-900 relative">
+            <img src={imageUrl || "/placeholder.svg"} alt={title} className="w-full h-full object-contain" />
+          </div>
+        )}
+      </CardContent>
+
+      <CardFooter className="flex flex-col p-4">
+        {showLoginAlert && (
+          <Alert className="mb-4 bg-amber-900/20 text-amber-300 border-amber-800">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="flex items-center justify-between w-full">
+              <span>Você precisa estar logado para votar.</span>
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="border-amber-800 text-amber-300"
+                onClick={startLoading}
+              >
+                <LinkWithLoading href="/usuario">Entrar agora</LinkWithLoading>
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <div className="flex items-start w-full">
+          <div className="flex flex-col items-center mr-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleVote("up")}
+              className={userVote === "up" ? "text-green-500" : "text-gray-400"}
+            >
+              <ArrowBigUp className="h-6 w-6" />
+              <span className="sr-only">Upvote</span>
+            </Button>
+            <span className="text-sm font-medium text-white">{likes}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleVote("down")}
+              className={userVote === "down" ? "text-red-500" : "text-gray-400"}
+            >
+              <ArrowBigDown className="h-6 w-6" />
+              <span className="sr-only">Downvote</span>
+            </Button>
+          </div>
+
+          <div className="flex-1">
+            {content && <p className="text-sm text-gray-300 mb-4">{content}</p>}
+            <div className="flex items-center mt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowComments(!showComments)}
+                className="text-gray-400 hover:text-white"
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                {commentCount} comentários
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {showComments && (
+          <div className="w-full mt-4">
+            <Separator className="my-4 bg-gray-700" />
+            <CommentSection postId={id.toString()} />
+          </div>
+        )}
+      </CardFooter>
+    </Card>
+  )
+}
+
+// Add default export
+export default MemePost
