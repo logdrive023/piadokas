@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -26,6 +26,10 @@ export default function CreatePostPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { isLoggedIn } = useAuth()
   const router = useRouter()
+
+  // Refs para os inputs de arquivo
+  const imageInputRef = useRef<HTMLInputElement>(null)
+  const videoInputRef = useRef<HTMLInputElement>(null)
 
   // Check if user is logged in, if not redirect to login page
   if (typeof window !== "undefined" && !isLoggedIn) {
@@ -221,12 +225,16 @@ export default function CreatePostPage() {
                             accept="image/*"
                             onChange={handleImageUpload}
                             className="hidden"
+                            ref={imageInputRef}
                           />
-                          <label htmlFor="image-upload">
-                            <Button type="button" variant="outline" className="border-purple-600 text-purple-400">
-                              Selecionar arquivo
-                            </Button>
-                          </label>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="border-purple-600 text-purple-400"
+                            onClick={() => imageInputRef.current?.click()}
+                          >
+                            Selecionar arquivo
+                          </Button>
                         </div>
                       ) : (
                         <div className="relative">
@@ -258,12 +266,16 @@ export default function CreatePostPage() {
                             accept="video/*"
                             onChange={handleVideoUpload}
                             className="hidden"
+                            ref={videoInputRef}
                           />
-                          <label htmlFor="video-upload">
-                            <Button type="button" variant="outline" className="border-purple-600 text-purple-400">
-                              Selecionar arquivo
-                            </Button>
-                          </label>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="border-purple-600 text-purple-400"
+                            onClick={() => videoInputRef.current?.click()}
+                          >
+                            Selecionar arquivo
+                          </Button>
                         </div>
                       ) : (
                         <div className="relative">

@@ -118,41 +118,41 @@ export function MemePost({
 
   return (
     <Card className="overflow-hidden bg-gray-800 border-gray-700">
-      <div className="p-4 border-b border-gray-700">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center">
-            <Avatar className="h-6 w-6 mr-2">
-              <AvatarImage src={`/abstract-user-icon.png?height=40&width=40&query=user avatar ${authorId}`} />
-              <AvatarFallback>{(author && author[0]) || "U"}</AvatarFallback>
-            </Avatar>
-            <LinkWithLoading href={`/user/${authorId}`} className="text-sm font-medium hover:underline mr-2 text-white">
-              {author}
-            </LinkWithLoading>
-            <span className="text-xs text-gray-400">
-              {typeof timestamp === "string"
-                ? timestamp
-                : timestamp.toLocaleString("pt-BR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-            </span>
+      <LinkWithLoading href={`/meme/${id}`} className="block">
+        <div className="p-4 border-b border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center">
+              <Avatar className="h-6 w-6 mr-2">
+                <AvatarImage src={`/abstract-user-icon.png?height=40&width=40&query=user avatar ${authorId}`} />
+                <AvatarFallback>{(author && author[0]) || "U"}</AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium mr-2 text-white">{author}</span>
+              <span className="text-xs text-gray-400">
+                {typeof timestamp === "string"
+                  ? timestamp
+                  : timestamp.toLocaleString("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+              </span>
+            </div>
+            <ShareButtons url={`https://memeverse.com/meme/${id}`} title={title} compact />
           </div>
-          <ShareButtons url={`https://memeverse.com/post/${id}`} title={title} compact />
+          <h2 className="text-xl font-bold mb-2 text-white">{title}</h2>
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-2">
+              {tags.map((tag, index) => (
+                <Badge key={index} variant="secondary" className="text-xs bg-gray-700 text-gray-300">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
-        <h2 className="text-xl font-bold mb-2 text-white">{title}</h2>
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
-            {tags.map((tag, index) => (
-              <Badge key={index} variant="secondary" className="text-xs bg-gray-700 text-gray-300">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
-      </div>
+      </LinkWithLoading>
 
       <CardContent className="p-0">
         {isVideo ? (

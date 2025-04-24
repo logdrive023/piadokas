@@ -70,19 +70,21 @@ export default function RankingsPage() {
               <h1 className="text-2xl font-bold text-white mb-6">Rankings</h1>
 
               <Tabs defaultValue="day" value={period} onValueChange={setPeriod}>
-                <TabsList className="grid grid-cols-4 mb-6">
-                  <TabsTrigger value="day">Hoje</TabsTrigger>
-                  <TabsTrigger value="week">Semana</TabsTrigger>
-                  <TabsTrigger value="month">Mês</TabsTrigger>
-                  <TabsTrigger value="allTime">Todos</TabsTrigger>
-                </TabsList>
+                <div className="overflow-x-auto -mx-2 px-2">
+                  <TabsList className="grid grid-cols-4 mb-6 min-w-[300px]">
+                    <TabsTrigger value="day">Hoje</TabsTrigger>
+                    <TabsTrigger value="week">Semana</TabsTrigger>
+                    <TabsTrigger value="month">Mês</TabsTrigger>
+                    <TabsTrigger value="allTime">Todos</TabsTrigger>
+                  </TabsList>
+                </div>
 
                 {Object.entries(rankings).map(([key, posts]) => (
                   <TabsContent key={key} value={key} className="space-y-6">
                     {posts.map((post, index) => (
                       <React.Fragment key={post.id}>
-                        <div className="flex items-center gap-4 bg-gray-700 rounded-lg overflow-hidden">
-                          <div className="w-12 h-full bg-purple-600 flex items-center justify-center text-white font-bold text-xl">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-gray-700 rounded-lg overflow-hidden">
+                          <div className="w-full sm:w-12 h-12 sm:h-full bg-purple-600 flex items-center justify-center text-white font-bold text-xl">
                             {post.position}
                           </div>
                           <div className="flex flex-1 items-center gap-4 p-4">
@@ -96,7 +98,7 @@ export default function RankingsPage() {
                             <div className="flex-1 min-w-0">
                               <h3 className="text-white font-medium line-clamp-2">{post.title}</h3>
                               <p className="text-sm text-gray-400 mt-1">por @{post.author}</p>
-                              <div className="flex items-center gap-4 mt-2">
+                              <div className="flex items-center gap-4 mt-2 flex-wrap">
                                 <span className="flex items-center text-sm text-gray-300">
                                   <ThumbsUp className="h-3.5 w-3.5 mr-1 text-purple-400" />
                                   {post.likes}
@@ -111,7 +113,7 @@ export default function RankingsPage() {
                                 </span>
                               </div>
                             </div>
-                            <Link href={`/post/${post.id}`}>
+                            <Link href={`/meme/${post.id}`} className="flex-shrink-0">
                               <Button variant="outline" size="sm" className="border-purple-600 text-purple-400">
                                 Ver post
                               </Button>

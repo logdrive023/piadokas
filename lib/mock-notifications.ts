@@ -11,64 +11,57 @@ interface Notification {
 }
 
 export function getMockNotifications(): Notification[] {
-  return [
-    {
-      id: "1",
+  // Gerar 30 notificações para testar a paginação
+  const mockNotifications: Notification[] = []
+
+  // Notificações de curtidas
+  for (let i = 1; i <= 8; i++) {
+    mockNotifications.push({
+      id: `like-${i}`,
       type: "like",
-      message: '5 pessoas curtiram seu post "Quando o código finalmente funciona"',
-      time: "há 5 minutos",
-      read: false,
-      postId: "post-1",
-    },
-    {
-      id: "2",
+      message: `${Math.floor(Math.random() * 10) + 1} pessoas curtiram seu post "${i % 2 === 0 ? "Quando o código finalmente funciona" : "Meu gato quando vê o aspirador"}"`,
+      time: `há ${i < 3 ? i * 5 : i * 10} minutos`,
+      read: i > 4,
+      postId: `post-${i}`,
+    })
+  }
+
+  // Notificações de comentários
+  for (let i = 1; i <= 8; i++) {
+    mockNotifications.push({
+      id: `comment-${i}`,
       type: "comment",
-      message: 'usuarioLegal comentou no seu post: "KKKKKK muito bom!"',
-      time: "há 15 minutos",
-      read: false,
-      postId: "post-1",
-      userId: "user-1",
-    },
-    {
-      id: "3",
+      message: `usuario${i * 10} comentou no seu post: "${i % 3 === 0 ? "KKKKKK muito bom!" : i % 3 === 1 ? "Isso me lembra quando..." : "Vou compartilhar com meus amigos!"}"`,
+      time: `há ${i < 3 ? i : i * 2} horas`,
+      read: i > 5,
+      postId: `post-${i + 10}`,
+      userId: `user-${i * 10}`,
+    })
+  }
+
+  // Notificações de seguidores
+  for (let i = 1; i <= 8; i++) {
+    mockNotifications.push({
+      id: `follow-${i}`,
       type: "follow",
-      message: "memeMaster começou a seguir você",
-      time: "há 1 hora",
-      read: false,
-      userId: "user-2",
-    },
-    {
-      id: "4",
-      type: "like",
-      message: "10 pessoas curtiram seu comentário",
-      time: "há 2 horas",
-      read: true,
-      postId: "post-2",
-    },
-    {
-      id: "5",
+      message: `${i % 2 === 0 ? "memeMaster" : "usuario"}${i * 5} começou a seguir você`,
+      time: `há ${i} dia${i > 1 ? "s" : ""}`,
+      read: i > 3,
+      userId: `user-${i * 5}`,
+    })
+  }
+
+  // Notificações do sistema
+  for (let i = 1; i <= 6; i++) {
+    mockNotifications.push({
+      id: `system-${i}`,
       type: "system",
-      message: "Seu post foi aprovado pelos moderadores",
-      time: "há 3 horas",
-      read: true,
-      postId: "post-3",
-    },
-    {
-      id: "6",
-      type: "comment",
-      message: 'dev123 respondeu ao seu comentário: "Concordo totalmente!"',
-      time: "há 5 horas",
-      read: true,
-      postId: "post-2",
-      userId: "user-3",
-    },
-    {
-      id: "7",
-      type: "like",
-      message: '3 pessoas curtiram seu post "Meu gato quando vê o aspirador"',
-      time: "há 1 dia",
-      read: true,
-      postId: "post-4",
-    },
-  ]
+      message: `${i % 3 === 0 ? "Seu post foi aprovado pelos moderadores" : i % 3 === 1 ? "Bem-vindo ao PiAdokas! Complete seu perfil." : "Você ganhou uma conquista: Meme Master!"}`,
+      time: `há ${i} dia${i > 1 ? "s" : ""}`,
+      read: i > 2,
+      postId: i % 3 === 0 ? `post-${i + 20}` : undefined,
+    })
+  }
+
+  return mockNotifications
 }

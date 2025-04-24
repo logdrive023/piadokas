@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -41,11 +41,18 @@ export default function UserPage() {
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Redirect if already logged in
-  if (isLoggedIn && typeof window !== "undefined") {
-    router.push("/")
-    return null
-  }
+  // Redirect if already logged in 
+  // Opção antiga
+  //if (isLoggedIn && typeof window !== "undefined") {
+  // router.push("/")
+  // return null
+  //}
+  useEffect(() => {
+    if (isLoggedIn && typeof window !== "undefined") {
+      router.push("/")
+    }
+  }, [isLoggedIn, router])
+
 
   const showTermsPopup = () => {
     showPopup(<TermsPopup onClose={() => hidePopup()} />)

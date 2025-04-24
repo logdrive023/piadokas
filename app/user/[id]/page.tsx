@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState  } from "react"
+import { useParams } from "next/navigation" // ✅ importar isso
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -12,14 +13,12 @@ import { useAuth } from "@/lib/auth-context"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
-interface UserPageProps {
-  params: {
-    id: string
-  }
-}
 
-export default function UserPage({ params }: UserPageProps) {
-  const id = params.id
+
+export default function UserPage() {
+  const params = useParams()
+  const id = params.id as string 
+
   const { user } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [bio, setBio] = useState("Olá! Sou um usuário do PiAdokas e adoro compartilhar memes engraçados.")
