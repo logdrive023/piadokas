@@ -12,9 +12,9 @@ import ScrollToTop from "@/components/scroll-to-top"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "MemeVerse - O melhor site de memes do Brasil",
+  title: "PiAdokas - O melhor site de memes do Brasil",
   description: "Compartilhe, curta e comente os melhores memes da internet.",
-    generator: 'v0.dev'
+    generator: 'PiAdokas'
 }
 
 export default function RootLayout({
