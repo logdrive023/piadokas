@@ -109,7 +109,7 @@ export function MemePost({
                 {commentCount}
               </span>
             </div>
-            <ShareButtons url={`https://memeverse.com/post/${id}`} title={title} compact />
+            <ShareButtons url={`https://piadokas.com/post/${id}`} title={title} compact />
           </div>
         </div>
       </div>
@@ -139,7 +139,7 @@ export function MemePost({
                     })}
               </span>
             </div>
-            <ShareButtons url={`https://memeverse.com/meme/${id}`} title={title} compact />
+            <ShareButtons url={`https://piadokas.com/meme/${id}`} title={title} compact />
           </div>
           <h2 className="text-xl font-bold mb-2 text-white">{title}</h2>
           {tags.length > 0 && (

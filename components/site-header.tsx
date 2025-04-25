@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Search, Shield, LogOut, User } from "lucide-react"
+import { Menu, Search, Shield, LogOut, User, PlusCircle, Trophy, Heart, Mail, LogIn } from "lucide-react"
 import { useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { NotificationBell } from "@/components/notification-bell"
@@ -117,7 +117,6 @@ export default function SiteHeader() {
                     </div>
                     <LinkWithLoading
                       href="/admin"
-                      className="flex items-center gap-2 text-sm text-amber-400 hover:text-amber-300 font-medium"
                     >
                       <Shield className="h-4 w-4" />
                       Painel de Administração
@@ -129,6 +128,7 @@ export default function SiteHeader() {
                   href="/create"
                   className="flex items-center gap-2 text-sm text-gray-300 hover:text-white"
                 >
+                  <PlusCircle className="h-4 w-4" />
                   Criar Post
                 </LinkWithLoading>
                 <div className="h-px bg-gray-700" />
@@ -136,6 +136,7 @@ export default function SiteHeader() {
                   href="/rankings"
                   className="flex items-center gap-2 text-sm text-gray-300 hover:text-white"
                 >
+                  <Trophy className="h-4 w-4" />
                   Rankings
                 </LinkWithLoading>
                 <div className="h-px bg-gray-700" />
@@ -143,6 +144,7 @@ export default function SiteHeader() {
                   href="/donate"
                   className="flex items-center gap-2 text-sm text-gray-300 hover:text-white"
                 >
+                  <Heart className="h-4 w-4" />
                   Doar
                 </LinkWithLoading>
                 <div className="h-px bg-gray-700" />
@@ -150,6 +152,7 @@ export default function SiteHeader() {
                   href="/contato"
                   className="flex items-center gap-2 text-sm text-gray-300 hover:text-white"
                 >
+                  <Mail className="h-4 w-4" />
                   Contato
                 </LinkWithLoading>
                 <div className="h-px bg-gray-700" />
@@ -182,6 +185,7 @@ export default function SiteHeader() {
                     href="/usuario"
                     className="flex items-center gap-2 text-sm text-gray-300 hover:text-white"
                   >
+                    <LogIn className="h-4 w-4" />
                     Entrar
                   </LinkWithLoading>
                 )}

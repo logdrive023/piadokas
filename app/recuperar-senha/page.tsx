@@ -10,20 +10,30 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ArrowLeft, Send, CheckCircle2, LinkIcon } from "lucide-react"
 import Link from "next/link"
 
+// Importar a função de API mock no topo do arquivo
+import { forgotPasswordApi } from "@/lib/api-mock-auth"
+
 export default function RecuperarSenhaPage() {
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
+  // Substituir a função handleSubmit existente por:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simular envio do email de recuperação
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const response = await forgotPasswordApi(email)
 
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+      // Mesmo que falhe, não mostramos erro para não revelar quais emails existem
+      setIsSubmitting(false)
+      setIsSubmitted(true)
+    } catch (error) {
+      console.error("Password recovery failed:", error)
+      setIsSubmitting(false)
+      setIsSubmitted(true) // Ainda mostramos como sucesso por segurança
+    }
   }
 
   // URL de exemplo para teste

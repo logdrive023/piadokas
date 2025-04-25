@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { AuthProvider } from "@/lib/auth-context"
 import { LoadingProvider } from "@/components/loading-provider"
 import ScrollToTop from "@/components/scroll-to-top"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -51,6 +52,7 @@ export default function RootLayout({
                 </div>
               </PopupProvider>
             </LoadingProvider>
+            <Toaster />
           </AuthProvider>
         </ThemeProvider>
       </body>

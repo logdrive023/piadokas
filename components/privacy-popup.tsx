@@ -104,7 +104,7 @@ export function PrivacyPopup({ onClose }: PrivacyPopupProps) {
           <h3 className="text-lg font-semibold text-white mt-4">8. Contate-nos</h3>
           <p>
             Para mais informações sobre nossas práticas de privacidade, se você tiver dúvidas ou se quiser fazer uma
-            reclamação, entre em contato conosco por e-mail em contato@memeverse.com.br.
+            reclamação, entre em contato conosco por e-mail em contato@piadokas.com.br
           </p>
 
           <p className="mt-6 text-sm text-gray-400">Última atualização: 22 de abril de 2024</p>

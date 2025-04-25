@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,10 +12,13 @@ import { ArrowLeft, AlertCircle, CheckCircle2, Lock } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
 
+// Se o arquivo existir, adicionar a importação da função de API mock no topo
+import { resetPasswordApi } from "@/lib/api-mock-auth"
+
 // Token válido para teste
 const VALID_TOKEN = "abc123"
 
-function ResetPasswordContent() {
+export default function RedefinicaoSenhaPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const token = searchParams.get("token")
@@ -58,7 +61,8 @@ function ResetPasswordContent() {
 
     try {
       // Simular chamada de API para alterar a senha
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // await new Promise((resolve) => setTimeout(resolve, 1500))
+      await resetPasswordApi(token, password)
 
       // Sucesso
       setIsSuccess(true)
@@ -67,8 +71,8 @@ function ResetPasswordContent() {
       setTimeout(() => {
         router.push("/usuario")
       }, 3000)
-    } catch (err) {
-      setError("Ocorreu um erro ao redefinir sua senha. Tente novamente.")
+    } catch (err: any) {
+      setError(err.message || "Ocorreu um erro ao redefinir sua senha. Tente novamente.")
     } finally {
       setIsSubmitting(false)
     }
@@ -193,19 +197,5 @@ function ResetPasswordContent() {
         </div>
       </div>
     </div>
-  )
-}
-
-export default function RedefinicaoSenhaPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex justify-center items-center min-h-screen bg-gray-900">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-        </div>
-      }
-    >
-      <ResetPasswordContent />
-    </Suspense>
   )
 }

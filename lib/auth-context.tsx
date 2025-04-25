@@ -1,6 +1,10 @@
 "use client"
 
 import { createContext, useContext, useState, type ReactNode } from "react"
+import { useToast } from "@/hooks/use-toast"
+
+// Importar as funções de API mock no topo do arquivo
+import { loginApi, registerApi } from "@/lib/api-mock-auth"
 
 interface User {
   id: string
@@ -35,54 +39,20 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<User | null>(null)
+  const { toast } = useToast()
 
   // Mock login function
   const login = async (email: string, password: string) => {
-    // In a real app, this would make an API call to authenticate
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      const response = await loginApi({ email, password })
 
-      // Check for admin user
-      if (email === "admin@admin.com" && password === "senha1234") {
+      if (response.success && response.user) {
         setIsLoggedIn(true)
-        setUser({
-          id: "admin-1",
-          username: "Administrador",
-          email: "admin@admin.com",
-          avatar: "/admin-avatar.png",
-          isAdmin: true,
-        })
+        setUser(response.user)
         return true
       }
 
-      // Check for test user
-      if (email === "usuario@teste.com" && password === "senha123") {
-        setIsLoggedIn(true)
-        setUser({
-          id: "user-test",
-          username: "UsuarioTeste",
-          email: "usuario@teste.com",
-          avatar: "/abstract-user-icon.png",
-          isAdmin: false,
-        })
-        return true
-      }
-
-      // Mock successful login for regular users
-      setIsLoggedIn(true)
-
-      // Extract username from email
-      const username = email.split("@")[0]
-
-      setUser({
-        id: "user-1",
-        username: username,
-        email: email,
-        avatar: "/abstract-user-icon.png",
-        isAdmin: false,
-      })
-      return true
+      return false
     } catch (error) {
       console.error("Login failed:", error)
       return false
@@ -91,21 +61,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Mock register function
   const register = async (username: string, email: string, password: string) => {
-    // In a real app, this would make an API call to register
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      const response = await registerApi({ username, email, password })
 
-      // Mock successful registration and auto-login
-      setIsLoggedIn(true)
-      setUser({
-        id: "user-" + Date.now(),
-        username: username,
-        email: email,
-        avatar: "/abstract-user-icon.png",
-        isAdmin: false,
-      })
-      return true
+      if (response.success && response.user) {
+        setIsLoggedIn(true)
+        setUser(response.user)
+        return true
+      }
+
+      return false
     } catch (error) {
       console.error("Registration failed:", error)
       return false
@@ -116,6 +81,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = () => {
     setIsLoggedIn(false)
     setUser(null)
+    toast({
+      title: "Logout realizado com sucesso",
+      description: "Você foi desconectado da sua conta",
+    })
   }
 
   return <AuthContext.Provider value={{ isLoggedIn, user, login, register, logout }}>{children}</AuthContext.Provider>

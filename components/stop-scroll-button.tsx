@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Pause, Play, ArrowUp } from "lucide-react"
 
 interface StopScrollButtonProps {
   onToggle: (stopped: boolean) => void
@@ -33,30 +32,48 @@ export function StopScrollButton({ onToggle }: StopScrollButtonProps) {
     }
   }
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
-
   return (
-    <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-40">
-      <Button
-        className="rounded-full shadow-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
-        size="icon"
-        onClick={scrollToTop}
-      >
-        <ArrowUp className="h-5 w-5" />
-      </Button>
-
-      <Button
-        className={`rounded-full shadow-lg ${
-          stopped ? "bg-green-600 hover:bg-green-700 text-white" : "bg-purple-600 hover:bg-purple-700 text-white"
-        }`}
-        size="icon"
-        onClick={handleToggle}
-      >
-        {stopped ? <Play className="h-5 w-5" /> : <Pause className="h-5 w-5" />}
-      </Button>
-    </div>
+    <Button
+      className={`rounded-full shadow-lg ${
+        stopped ? "bg-green-600 hover:bg-green-700 text-white" : "bg-purple-600 hover:bg-purple-700 text-white"
+      }`}
+      size="icon"
+      onClick={handleToggle}
+      title={stopped ? "Retomar rolagem" : "Pausar rolagem"}
+    >
+      {stopped ? (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+        >
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+      ) : (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+        >
+          <rect x="6" y="4" width="4" height="16" />
+          <rect x="14" y="4" width="4" height="16" />
+        </svg>
+      )}
+    </Button>
   )
 }
 
