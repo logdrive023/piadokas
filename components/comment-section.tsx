@@ -17,22 +17,30 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  Trash2,
+  ThumbsDown,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import ReportModal from "./report-modal"
 import LinkWithLoading from "./link-with-loading"
 import { useLoading } from "./loading-provider"
+import { deleteComment, addComment, likeComment, dislikeComment, replyToComment } from "@/lib/api-mock-comentario"
 
 interface Comment {
   id: string
   author: {
     name: string
     avatar: string
+    id: string // Added to check ownership
   }
   content: string
   timestamp: string
   likes: number
+  dislikes: number // Added dislikes
   replies: Comment[]
+  isReplyOpen?: boolean // Track if reply form is open
+  userLiked?: boolean
+  userDisliked?: boolean
 }
 
 interface CommentSectionProps {
@@ -46,6 +54,7 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
   const [allComments, setAllComments] = useState<Comment[]>([])
   const [displayedComments, setDisplayedComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState("")
+  const [replyContents, setReplyContents] = useState<Record<string, string>>({})
   const [sortOption, setSortOption] = useState<SortOption>("newest")
   const [page, setPage] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
@@ -66,6 +75,7 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
         author: {
           name: `Usuário${Math.floor(Math.random() * 100)}`,
           avatar: `/abstract-user-icon.png?height=40&width=40&query=user avatar ${i + 1}`,
+          id: `user-${Math.floor(Math.random() * 1000)}`, // Random user ID
         },
         content: [
           "Esse meme é simplesmente perfeito! 😂 Não consigo parar de rir!",
@@ -81,6 +91,7 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
         ][Math.floor(Math.random() * 10)],
         timestamp: `${Math.floor(Math.random() * 24)} hora${Math.floor(Math.random() * 24) === 1 ? "" : "s"} atrás`,
         likes: Math.floor(Math.random() * 100),
+        dislikes: Math.floor(Math.random() * 30), // Added dislikes
         replies: [],
       }))
 
@@ -119,7 +130,7 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
     }
   }, [allComments, page, sortOption])
 
-  const handleSubmitComment = (e: React.FormEvent) => {
+  const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!isLoggedIn) {
@@ -134,14 +145,18 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
         author: {
           name: user?.username || "Usuário",
           avatar: user?.avatar || "/abstract-user-icon.png",
+          id: user?.id || "unknown",
         },
         content: newComment,
         timestamp: "agora mesmo",
         likes: 0,
+        dislikes: 0,
         replies: [],
       }
 
-      setAllComments([comment, ...allComments])
+      // Add comment using mock API
+      const addedComment = await addComment(postId, comment)
+      setAllComments([addedComment, ...allComments])
       setNewComment("")
 
       // Resetar para a primeira página e ordenação por mais recentes
@@ -150,7 +165,73 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
     }
   }
 
-  const handleLikeComment = (commentId: string) => {
+  const handleLikeComment = async (commentId: string) => {
+    if (!isLoggedIn) {
+      startLoading()
+      router.push("/usuario")
+      return
+    }
+
+    try {
+      const updatedComment = await likeComment(commentId, user?.id || "unknown")
+
+      // Atualizar o comentário na lista de forma recursiva
+      setAllComments((prevComments) => {
+        return updateCommentInList(prevComments, updatedComment)
+      })
+    } catch (error) {
+      console.error("Erro ao curtir comentário:", error)
+    }
+  }
+
+  const handleDislikeComment = async (commentId: string) => {
+    if (!isLoggedIn) {
+      startLoading()
+      router.push("/usuario")
+      return
+    }
+
+    try {
+      const updatedComment = await dislikeComment(commentId, user?.id || "unknown")
+
+      // Atualizar o comentário na lista de forma recursiva
+      setAllComments((prevComments) => {
+        return updateCommentInList(prevComments, updatedComment)
+      })
+    } catch (error) {
+      console.error("Erro ao descurtir comentário:", error)
+    }
+  }
+
+  // Função auxiliar para atualizar um comentário na lista (incluindo respostas)
+  const updateCommentInList = (comments: Comment[], updatedComment: Comment): Comment[] => {
+    return comments.map((comment) => {
+      if (comment.id === updatedComment.id) {
+        return updatedComment
+      }
+
+      if (comment.replies && comment.replies.length > 0) {
+        return {
+          ...comment,
+          replies: updateCommentInList(comment.replies, updatedComment),
+        }
+      }
+
+      return comment
+    })
+  }
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!isLoggedIn) {
+      return
+    }
+
+    await deleteComment(commentId)
+
+    setAllComments(allComments.filter((comment) => comment.id !== commentId))
+  }
+
+  const handleReplyToggle = (commentId: string) => {
     if (!isLoggedIn) {
       startLoading()
       router.push("/usuario")
@@ -160,11 +241,46 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
     setAllComments(
       allComments.map((comment) => {
         if (comment.id === commentId) {
-          return { ...comment, likes: comment.likes + 1 }
+          return { ...comment, isReplyOpen: !comment.isReplyOpen }
         }
         return comment
       }),
     )
+  }
+
+  const handleSubmitReply = async (commentId: string) => {
+    if (!isLoggedIn || !replyContents[commentId]?.trim()) {
+      return
+    }
+
+    const reply: Comment = {
+      id: `reply-${Date.now()}`,
+      author: {
+        name: user?.username || "Usuário",
+        avatar: user?.avatar || "/abstract-user-icon.png",
+        id: user?.id || "unknown",
+      },
+      content: replyContents[commentId],
+      timestamp: "agora mesmo",
+      likes: 0,
+      dislikes: 0,
+      replies: [],
+    }
+
+    const updatedComment = await replyToComment(commentId, reply)
+
+    setAllComments(
+      allComments.map((comment) => {
+        if (comment.id === commentId) {
+          return updatedComment
+        }
+        return comment
+      }),
+    )
+
+    // Clear reply content and close reply form
+    setReplyContents({ ...replyContents, [commentId]: "" })
+    handleReplyToggle(commentId)
   }
 
   const handleReportClick = (commentId: string) => {
@@ -256,8 +372,14 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
           <div className="flex-1">
             <Textarea
               placeholder={isLoggedIn ? "Escreva um comentário..." : "Faça login para comentar..."}
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              defaultValue={newComment}
+              onChange={(e) => {
+                // Usar setTimeout para evitar atualizações de estado muito frequentes
+                const value = e.target.value
+                setTimeout(() => {
+                  setNewComment(value)
+                }, 0)
+              }}
               className="bg-gray-800 border-gray-700 text-white resize-none mb-2"
               disabled={!isLoggedIn}
             />
@@ -297,30 +419,150 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
                       <p className="mt-1 text-gray-300">{comment.content}</p>
                       <div className="flex items-center gap-4 mt-2">
                         <button
-                          className={`flex items-center gap-1 text-xs ${
+                          className={`flex items-center ${
                             isLoggedIn
-                              ? "text-gray-400 hover:text-purple-400 cursor-pointer"
+                              ? comment.userLiked
+                                ? "text-green-400 hover:text-green-500 cursor-pointer"
+                                : "text-gray-400 hover:text-green-400 cursor-pointer"
                               : "text-gray-500 cursor-not-allowed"
                           }`}
                           onClick={() => isLoggedIn && handleLikeComment(comment.id)}
                           disabled={!isLoggedIn}
+                          title="Curtir"
                         >
-                          <ThumbsUp className="h-3.5 w-3.5" />
-                          <span>{comment.likes > 0 ? comment.likes : ""} Curtir</span>
+                          <ThumbsUp className="h-4 w-4" />
+                          <span className="ml-1 text-xs">{comment.likes > 0 ? comment.likes : ""}</span>
                         </button>
                         <button
-                          className={`flex items-center gap-1 text-xs ${
+                          className={`flex items-center ${
+                            isLoggedIn
+                              ? comment.userDisliked
+                                ? "text-red-400 hover:text-red-500 cursor-pointer"
+                                : "text-gray-400 hover:text-red-400 cursor-pointer"
+                              : "text-gray-500 cursor-not-allowed"
+                          }`}
+                          onClick={() => isLoggedIn && handleDislikeComment(comment.id)}
+                          disabled={!isLoggedIn}
+                          title="Não curtir"
+                        >
+                          <ThumbsDown className="h-4 w-4" />
+                          <span className="ml-1 text-xs">{comment.dislikes > 0 ? comment.dislikes : ""}</span>
+                        </button>
+                        <button
+                          className={`flex items-center ${
                             isLoggedIn
                               ? "text-gray-400 hover:text-purple-400 cursor-pointer"
                               : "text-gray-500 cursor-not-allowed"
                           }`}
+                          onClick={() => isLoggedIn && handleReplyToggle(comment.id)}
                           disabled={!isLoggedIn}
-                          onClick={() => (isLoggedIn ? null : startLoading() && router.push("/usuario"))}
+                          title="Responder"
                         >
-                          <MessageSquare className="h-3.5 w-3.5" />
-                          <span>Responder</span>
+                          <MessageSquare className="h-4 w-4" />
                         </button>
                       </div>
+
+                      {/* Reply form */}
+                      {comment.isReplyOpen && isLoggedIn && (
+                        <div className="mt-3 pl-2 border-l-2 border-gray-700">
+                          <div className="flex gap-2">
+                            <Avatar className="h-6 w-6">
+                              <img src={user?.avatar || "/abstract-user-icon.png"} alt="Avatar" />
+                            </Avatar>
+                            <div className="flex-1">
+                              <Textarea
+                                placeholder="Escreva uma resposta..."
+                                defaultValue={replyContents[comment.id] || ""}
+                                onChange={(e) => {
+                                  // Usar setTimeout para evitar atualizações de estado muito frequentes
+                                  const value = e.target.value
+                                  const commentId = comment.id
+                                  setTimeout(() => {
+                                    setReplyContents((prev) => ({ ...prev, [commentId]: value }))
+                                  }, 0)
+                                }}
+                                className="bg-gray-800 border-gray-700 text-white resize-none mb-2 text-sm min-h-[60px]"
+                              />
+                              <div className="flex justify-end">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleReplyToggle(comment.id)}
+                                  className="mr-2 text-gray-400 hover:text-gray-300"
+                                >
+                                  Cancelar
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleSubmitReply(comment.id)}
+                                  disabled={!replyContents[comment.id]?.trim()}
+                                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                                >
+                                  Responder
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Replies */}
+                      {comment.replies && comment.replies.length > 0 && (
+                        <div className="mt-3 pl-4 border-l-2 border-gray-700 space-y-3">
+                          {comment.replies.map((reply) => (
+                            <div key={reply.id} className="pt-2">
+                              <div className="flex gap-2">
+                                <Avatar className="h-6 w-6">
+                                  <img src={reply.author.avatar || "/placeholder.svg"} alt={reply.author.name} />
+                                </Avatar>
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <LinkWithLoading href={`/user/${reply.author.name}`}>
+                                      <span className="font-medium text-white hover:underline cursor-pointer text-sm">
+                                        {reply.author.name}
+                                      </span>
+                                    </LinkWithLoading>
+                                    <span className="text-xs text-gray-400">{reply.timestamp}</span>
+                                  </div>
+                                  <p className="mt-1 text-gray-300 text-sm">{reply.content}</p>
+                                  <div className="flex items-center gap-3 mt-1">
+                                    <button
+                                      className={`flex items-center ${
+                                        isLoggedIn
+                                          ? reply.userLiked
+                                            ? "text-green-400 hover:text-green-500 cursor-pointer"
+                                            : "text-gray-400 hover:text-green-400 cursor-pointer"
+                                          : "text-gray-500 cursor-not-allowed"
+                                      }`}
+                                      onClick={() => isLoggedIn && handleLikeComment(reply.id)}
+                                      disabled={!isLoggedIn}
+                                      title="Curtir"
+                                    >
+                                      <ThumbsUp className="h-3 w-3" />
+                                      <span className="ml-1 text-xs">{reply.likes > 0 ? reply.likes : ""}</span>
+                                    </button>
+                                    <button
+                                      className={`flex items-center ${
+                                        isLoggedIn
+                                          ? reply.userDisliked
+                                            ? "text-red-400 hover:text-red-500 cursor-pointer"
+                                            : "text-gray-400 hover:text-red-400 cursor-pointer"
+                                          : "text-gray-500 cursor-not-allowed"
+                                      }`}
+                                      onClick={() => isLoggedIn && handleDislikeComment(reply.id)}
+                                      disabled={!isLoggedIn}
+                                      title="Não curtir"
+                                    >
+                                      <ThumbsDown className="h-3 w-3" />
+                                      <span className="ml-1 text-xs">{reply.dislikes > 0 ? reply.dislikes : ""}</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -331,6 +573,15 @@ export function CommentSection({ postId, initialComments = [] }: CommentSectionP
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+                      {isLoggedIn && user?.id === comment.author.id && (
+                        <DropdownMenuItem
+                          className="flex items-center text-white hover:bg-gray-700 cursor-pointer"
+                          onClick={() => handleDeleteComment(comment.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2 text-red-500" />
+                          Excluir
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem
                         className={`flex items-center ${
                           isLoggedIn

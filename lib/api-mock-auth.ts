@@ -1,5 +1,5 @@
 // Simula um atraso de rede para parecer uma chamada de API real
-const simulateNetworkDelay = (minMs = 300, maxMs = 800) => {
+export const simulateNetworkDelay = (minMs = 300, maxMs = 800) => {
     const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs
     return new Promise((resolve) => setTimeout(resolve, delay))
   }

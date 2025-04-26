@@ -290,10 +290,10 @@ export default function Home() {
           <div className="lg:col-span-4 space-y-6">
             <SidebarAd />
 
-            {/* Online Readers Section */}
+            {/* Online Readers Section 
             <div className="bg-gray-800 rounded-lg p-4">
               <OnlineReaders count={142} />
-            </div>
+            </div>*/}
 
             {/* Crypto Donation Section */}
             <CryptoDonationSection />

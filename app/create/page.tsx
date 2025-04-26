@@ -112,18 +112,11 @@ export default function CreatePostPage() {
                         <AlertDescription className="text-gray-300">
                           <ul className="list-disc pl-5 space-y-1 mt-2">
                             <li>
-                              Formatos recomendados: JPEG ou PNG. Para vídeos: MP4. Os formatos JFIF e MOV não são
-                              recomendados, mas são aceitos.
+                              Formatos recomendados: JPEG ou PNG. Para vídeos: MP4.
                             </li>
                             <li>
-                              Você pode mandar o link do vídeo ou gif caso não saiba baixar. Isso inclusive facilita a
-                              postagem.
+                              Você pode mandar o link do vídeo ou gif caso não saiba baixar.
                             </li>
-                            <li>
-                              Tamanho do meme: de preferência menos de 2000px de altura. A largura é automaticamente
-                              ajustada para 620px.
-                            </li>
-                            <li>Anexe no máximo 10 arquivos por vez.</li>
                           </ul>
                         </AlertDescription>
                       </Alert>
@@ -133,15 +126,13 @@ export default function CreatePostPage() {
                         <AlertTitle className="text-white">Restrições Importantes</AlertTitle>
                         <AlertDescription className="text-gray-300">
                           <ul className="list-disc pl-5 space-y-1 mt-2">
-                            <li>
-                              Só serão aceitos memes sem marca d'água de outro site. Não é necessário inserir a marca do
-                              PiAdokas, é automático.
-                            </li>
-                            <li>Memes repetidos ou com mesma ideia de outro meme recente não serão aprovados.</li>
-                            <li className="font-medium text-amber-300">
-                              Temas proibidos: política, violência, discurso de ódio, pornografia ou brincadeiras de mal
-                              gosto envolvendo crianças e adolescentes.
-                            </li>
+                          <li className="font-medium text-amber-300">Violência explícita ou gratuita</li>
+                          <li className="font-medium text-amber-300">Discurso de ódio, preconceito ou intolerância (raça, gênero, religião etc.)</li>
+                          <li className="font-medium text-amber-300">Pornografia ou conteúdo sexual explícito</li>
+                          <li className="font-medium text-amber-300">Brincadeiras de mau gosto envolvendo crianças ou adolescentes</li>
+                          <li className="font-medium text-amber-300">Apologia ao uso de drogas ilícitas</li>
+                          <li className="font-medium text-amber-300">Conteúdo que incentive autolesão ou suicídio</li>
+                          <li className="font-medium text-amber-300">Ataques pessoais, doxing ou exposição de terceiros sem consentimento</li>
                           </ul>
                         </AlertDescription>
                       </Alert>
@@ -152,12 +143,10 @@ export default function CreatePostPage() {
                         <AlertDescription className="text-gray-300">
                           <ul className="list-disc pl-5 space-y-1 mt-2">
                             <li>
-                              Coloque nome e sobrenome ou apelido. Se tiver alguma dúvida, coloque seu e-mail real para
-                              ser respondido.
+                              Coloque o titulo e a descrição e as tags
                             </li>
                             <li>
-                              Seu meme poderá ser publicado entre 1 e 3 dias, ou pode cair na coletânea peculiar de
-                              domingo.
+                              Seu meme poderá ser publicado entre 1 e 3 dias.
                             </li>
                             <li>Enviando uma foto você automaticamente autoriza a mesma a ser postada no blog.</li>
                           </ul>

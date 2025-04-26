@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, ArrowBigUp, ArrowBigDown, MessageSquare, AlertCircle } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -14,7 +14,11 @@ import CommentSection from "@/components/comment-section"
 import ShareButtons from "@/components/share-buttons"
 import { HorizontalAd } from "@/components/horizontal-ad"
 import { SidebarAd } from "@/components/sidebar-ad"
-import { fetchMemeById, fetchAuthorMemes } from "@/lib/api-mock-meme"
+import { fetchMemeById, fetchAuthorMemes, likeMeme } from "@/lib/api-mock-meme"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useAuth } from "@/lib/auth-context"
+import LinkWithLoading from "@/components/link-with-loading"
+import { useLoading } from "@/components/loading-provider"
 
 export default function MemePage() {
   const params = useParams()
@@ -25,6 +29,10 @@ export default function MemePage() {
   const [authorMemes, setAuthorMemes] = useState<MockPost[]>([])
   const [loadedId, setLoadedId] = useState<string | null>(null)
   const [apiStatus, setApiStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [userVote, setUserVote] = useState<"up" | "down" | null>(null)
+  const [showLoginAlert, setShowLoginAlert] = useState(false)
+  const { isLoggedIn } = useAuth()
+  const { startLoading } = useLoading()
 
   // Usar useCallback para criar uma função estável que carrega os dados
   const loadMemeData = useCallback(
@@ -66,6 +74,40 @@ export default function MemePage() {
     },
     [loadedId, meme],
   )
+
+  // Função para lidar com votos (like/dislike)
+  const handleVote = async (direction: "up" | "down") => {
+    if (!isLoggedIn) {
+      setShowLoginAlert(true)
+      return
+    }
+
+    if (!meme) return
+
+    let action: "like" | "dislike" | "remove" = "like"
+
+    if (userVote === direction) {
+      // Remover voto se clicar no mesmo botão
+      action = "remove"
+      setUserVote(null)
+    } else {
+      // Definir a ação com base na direção
+      action = direction === "up" ? "like" : "dislike"
+      setUserVote(direction)
+    }
+
+    try {
+      // Chamar a API para atualizar o like
+      const response = await likeMeme(meme.id.toString(), action)
+
+      if (response.success) {
+        // Atualizar o meme com o novo número de likes
+        setMeme((prev) => (prev ? { ...prev, likes: response.likes } : null))
+      }
+    } catch (error) {
+      console.error("Error updating vote:", error)
+    }
+  }
 
   // Efeito para carregar os dados quando o componente montar ou o ID mudar
   useEffect(() => {
@@ -195,7 +237,7 @@ export default function MemePage() {
                 </div>
 
                 <div className="flex items-center">
-                  <ShareButtons url={`https://piadokas.comm/meme/${meme.id}`} title={meme.title} />
+                  <ShareButtons url={`https://memeverse.com/meme/${meme.id}`} title={meme.title} />
                 </div>
               </div>
 
@@ -232,15 +274,52 @@ export default function MemePage() {
             <div className="p-4">
               {meme.content && <p className="text-gray-300 mb-4">{meme.content}</p>}
 
-              <div className="flex items-center gap-4">
-                <span className="flex items-center text-sm text-gray-300">
-                  <span className="font-medium text-white">{meme.likes}</span>
-                  <span className="ml-1">curtidas</span>
-                </span>
-                <span className="flex items-center text-sm text-gray-300">
-                  <span className="font-medium text-white">{meme.comments}</span>
-                  <span className="ml-1">comentários</span>
-                </span>
+              {showLoginAlert && (
+                <Alert className="mb-4 bg-amber-900/20 text-amber-300 border-amber-800">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="flex items-center justify-between w-full">
+                    <span>Você precisa estar logado para votar.</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="border-amber-800 text-amber-300"
+                      onClick={startLoading}
+                    >
+                      <LinkWithLoading href="/usuario">Entrar agora</LinkWithLoading>
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col items-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleVote("up")}
+                      className={userVote === "up" ? "text-green-500" : "text-gray-400"}
+                    >
+                      <ArrowBigUp className="h-6 w-6" />
+                      <span className="sr-only">Upvote</span>
+                    </Button>
+                    <span className="text-sm font-medium text-white">{meme.likes}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleVote("down")}
+                      className={userVote === "down" ? "text-red-500" : "text-gray-400"}
+                    >
+                      <ArrowBigDown className="h-6 w-6" />
+                      <span className="sr-only">Downvote</span>
+                    </Button>
+                  </div>
+                  <span className="flex items-center text-sm text-gray-300">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    <span>{meme.comments} comentários</span>
+                  </span>
+                </div>
               </div>
             </div>
           </Card>

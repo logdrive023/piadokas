@@ -56,3 +56,47 @@ export const fetchAuthorMemes = async (authorId: string | number, limit = 3): Pr
 
   return authorMemes
 }
+
+/**
+ * Simula uma chamada de API para dar like em um meme
+ */
+export const likeMeme = async (
+  id: string,
+  action: "like" | "dislike" | "remove",
+): Promise<{ success: boolean; likes: number }> => {
+  // Simular atraso de rede
+  await new Promise((resolve) => setTimeout(resolve, NETWORK_DELAY / 2))
+
+  // Encontrar o meme pelo ID
+  const memeIndex = mockPosts.findIndex((post) => String(post.id) === String(id))
+
+  if (memeIndex === -1) {
+    return { success: false, likes: 0 }
+  }
+
+  // Atualizar o número de likes com base na ação
+  let currentLikes = mockPosts[memeIndex].likes
+
+  switch (action) {
+    case "like":
+      currentLikes += 1
+      break
+    case "dislike":
+      currentLikes -= 1
+      break
+    case "remove":
+      // Não faz nada, apenas retorna o valor atual
+      break
+  }
+
+  // Atualizar o meme no array mockPosts
+  mockPosts[memeIndex] = {
+    ...mockPosts[memeIndex],
+    likes: currentLikes,
+  }
+
+  return {
+    success: true,
+    likes: currentLikes,
+  }
+}
