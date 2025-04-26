@@ -109,7 +109,7 @@ export function MemePost({
                 {commentCount}
               </span>
             </div>
-            <ShareButtons url={`https://piadokas.com/post/${id}`} title={title} compact />
+            <ShareButtons url={`https://memeverse.com/post/${id}`} title={title} compact />
           </div>
         </div>
       </div>
@@ -139,7 +139,7 @@ export function MemePost({
                     })}
               </span>
             </div>
-            <ShareButtons url={`https://piadokas.com/meme/${id}`} title={title} compact />
+            <ShareButtons url={`https://memeverse.com/meme/${id}`} title={title} compact />
           </div>
           <h2 className="text-xl font-bold mb-2 text-white">{title}</h2>
           {tags.length > 0 && (
@@ -154,7 +154,7 @@ export function MemePost({
         </div>
       </LinkWithLoading>
 
-      <CardContent className="p-0">
+      <CardContent className="p-0 relative">
         {isVideo ? (
           <div className="aspect-video bg-gray-900 relative">
             <video className="w-full h-full object-contain" controls poster={imageUrl}>
@@ -165,6 +165,11 @@ export function MemePost({
         ) : (
           <div className="aspect-video bg-gray-900 relative">
             <img src={imageUrl || "/placeholder.svg"} alt={title} className="w-full h-full object-contain" />
+          </div>
+        )}
+        {content && (
+          <div className="px-4 py-3 bg-gray-800/95 border-t border-gray-700">
+            <p className="text-sm text-gray-200">{content}</p>
           </div>
         )}
       </CardContent>
@@ -188,43 +193,47 @@ export function MemePost({
           </Alert>
         )}
 
-        <div className="flex items-start w-full">
-          <div className="flex flex-col items-center mr-4">
+        <div className="flex flex-wrap items-center gap-3 w-full">
+          <div className="flex items-center bg-gray-750 rounded-lg overflow-hidden">
             <Button
               variant="ghost"
-              size="icon"
               onClick={() => handleVote("up")}
-              className={userVote === "up" ? "text-green-500" : "text-gray-400"}
+              className={`h-9 px-2 rounded-none ${
+                userVote === "up"
+                  ? "bg-green-600/20 text-green-400"
+                  : "text-gray-400 hover:text-green-400 hover:bg-gray-700"
+              }`}
             >
-              <ArrowBigUp className="h-6 w-6" />
+              <ArrowBigUp className="h-5 w-5" />
               <span className="sr-only">Upvote</span>
             </Button>
-            <span className="text-sm font-medium text-white">{likes}</span>
+
+            <div className="px-3 py-1.5 bg-gray-800/80 flex items-center justify-center min-w-[40px]">
+              <span className="text-sm font-medium text-white">{likes}</span>
+            </div>
+
             <Button
               variant="ghost"
-              size="icon"
               onClick={() => handleVote("down")}
-              className={userVote === "down" ? "text-red-500" : "text-gray-400"}
+              className={`h-9 px-2 rounded-none ${
+                userVote === "down"
+                  ? "bg-red-600/20 text-red-400"
+                  : "text-gray-400 hover:text-red-400 hover:bg-gray-700"
+              }`}
             >
-              <ArrowBigDown className="h-6 w-6" />
+              <ArrowBigDown className="h-5 w-5" />
               <span className="sr-only">Downvote</span>
             </Button>
           </div>
 
-          <div className="flex-1">
-            {content && <p className="text-sm text-gray-300 mb-4">{content}</p>}
-            <div className="flex items-center mt-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowComments(!showComments)}
-                className="text-gray-400 hover:text-white"
-              >
-                <MessageSquare className="h-4 w-4 mr-2" />
-                {commentCount} comentários
-              </Button>
-            </div>
-          </div>
+          <Button
+            variant="ghost"
+            onClick={() => setShowComments(!showComments)}
+            className="h-9 bg-gray-750 hover:bg-gray-700 text-gray-300 hover:text-white rounded-lg flex items-center space-x-2 px-3"
+          >
+            <MessageSquare className="h-4 w-4 text-blue-400" />
+            <span>{commentCount} comentários</span>
+          </Button>
         </div>
 
         {showComments && (

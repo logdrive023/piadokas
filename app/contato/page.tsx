@@ -389,15 +389,6 @@ export default function ContatoPage() {
                     com a sazonalidade e disponibilidade de espaços publicitários.
                   </p>
                 </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-white mb-2">Vocês oferecem relatórios de desempenho?</h3>
-                  <p className="text-gray-300">
-                    Sim, fornecemos relatórios detalhados sobre o desempenho da sua campanha, incluindo impressões,
-                    cliques, taxa de conversão e outras métricas relevantes. Os relatórios são enviados semanalmente ou
-                    conforme solicitado.
-                  </p>
-                </div>
               </CardContent>
             </Card>
           </TabsContent>

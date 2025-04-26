@@ -271,9 +271,13 @@ export default function MemePage() {
               )}
             </div>
 
-            <div className="p-4">
-              {meme.content && <p className="text-gray-300 mb-4">{meme.content}</p>}
+            {meme.content && (
+              <div className="px-4 py-3 bg-gray-800/95 border-t border-gray-700">
+                <p className="text-sm text-gray-200">{meme.content}</p>
+              </div>
+            )}
 
+            <div className="p-4">
               {showLoginAlert && (
                 <Alert className="mb-4 bg-amber-900/20 text-amber-300 border-amber-800">
                   <AlertCircle className="h-4 w-4" />
@@ -292,33 +296,44 @@ export default function MemePage() {
                 </Alert>
               )}
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="flex flex-col items-center">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleVote("up")}
-                      className={userVote === "up" ? "text-green-500" : "text-gray-400"}
-                    >
-                      <ArrowBigUp className="h-6 w-6" />
-                      <span className="sr-only">Upvote</span>
-                    </Button>
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center bg-gray-750 rounded-lg overflow-hidden">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleVote("up")}
+                    className={`h-10 px-3 rounded-none ${
+                      userVote === "up"
+                        ? "bg-green-600/20 text-green-400"
+                        : "text-gray-400 hover:text-green-400 hover:bg-gray-700"
+                    }`}
+                  >
+                    <ArrowBigUp className="h-5 w-5 mr-1 sm:mr-2" />
+                    {/*<span className="hidden sm:inline">Curtir</span> */}
+                  </Button>
+
+                  <div className="px-3 py-2 bg-gray-800/80 flex items-center justify-center min-w-[50px]">
                     <span className="text-sm font-medium text-white">{meme.likes}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleVote("down")}
-                      className={userVote === "down" ? "text-red-500" : "text-gray-400"}
-                    >
-                      <ArrowBigDown className="h-6 w-6" />
-                      <span className="sr-only">Downvote</span>
-                    </Button>
                   </div>
-                  <span className="flex items-center text-sm text-gray-300">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    <span>{meme.comments} comentários</span>
-                  </span>
+
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleVote("down")}
+                    className={`h-10 px-3 rounded-none ${
+                      userVote === "down"
+                        ? "bg-red-600/20 text-red-400"
+                        : "text-gray-400 hover:text-red-400 hover:bg-gray-700"
+                    }`}
+                  >
+                    <ArrowBigDown className="h-5 w-5 mr-1 sm:mr-2" />
+                   {/* <span className="hidden sm:inline">Não curtir</span> */}
+                  </Button>
+                </div>
+
+                <div className="flex items-center bg-gray-750 rounded-lg overflow-hidden">
+                  <div className="px-3 py-2 flex items-center">
+                    <MessageSquare className="h-4 w-4 mr-2 text-blue-400" />
+                    <span className="text-sm text-gray-200">{meme.comments} comentários</span>
+                  </div>
                 </div>
               </div>
             </div>
