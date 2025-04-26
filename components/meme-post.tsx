@@ -77,7 +77,7 @@ export function MemePost({
       navigator
         .share({
           title: title,
-          url: `https://memeverse.com/meme/${id}`,
+          url: `https://piadokas.com/meme/${id}`,
         })
         .catch((err) => {
           if (err.name !== "AbortError") {

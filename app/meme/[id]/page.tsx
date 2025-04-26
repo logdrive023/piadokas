@@ -237,7 +237,7 @@ export default function MemePage() {
                 </div>
 
                 <div className="flex items-center">
-                  <ShareButtons url={`https://memeverse.com/meme/${meme.id}`} title={meme.title} />
+                  <ShareButtons url={`https://piadokas.com/meme/${meme.id}`} title={meme.title} />
                 </div>
               </div>
 

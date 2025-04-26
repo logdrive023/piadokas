@@ -21,14 +21,14 @@ export function TermsPopup({ onClose }: TermsPopupProps) {
       <ScrollArea className="h-[60vh] p-4">
         <div className="space-y-4 text-gray-300">
           <p>
-            Bem-vindo aos Termos de Uso do MemeVerse. Ao acessar ou usar nosso site, você concorda em cumprir estes
+            Bem-vindo aos Termos de Uso do PiAdokas. Ao acessar ou usar nosso site, você concorda em cumprir estes
             termos e todas as leis e regulamentos aplicáveis. Se você não concordar com algum destes termos, está
             proibido de usar ou acessar este site.
           </p>
 
           <h3 className="text-lg font-semibold text-white mt-4">1. Uso da Licença</h3>
           <p>
-            É concedida permissão para baixar temporariamente uma cópia dos materiais no site MemeVerse apenas para
+            É concedida permissão para baixar temporariamente uma cópia dos materiais no site PiAdokas apenas para
             visualização transitória pessoal e não comercial. Esta é a concessão de uma licença, não uma transferência
             de título, e sob esta licença você não pode:
           </p>
@@ -42,7 +42,7 @@ export function TermsPopup({ onClose }: TermsPopupProps) {
 
           <h3 className="text-lg font-semibold text-white mt-4">2. Conteúdo do Usuário</h3>
           <p>
-            Ao enviar conteúdo para o MemeVerse, você concede ao site uma licença mundial, não exclusiva, isenta de
+            Ao enviar conteúdo para o PiAdokas, você concede ao site uma licença mundial, não exclusiva, isenta de
             royalties, sublicenciável e transferível para usar, reproduzir, distribuir, preparar trabalhos derivados,
             exibir e executar o conteúdo em conexão com o serviço fornecido pelo site.
           </p>
@@ -61,7 +61,7 @@ export function TermsPopup({ onClose }: TermsPopupProps) {
 
           <h3 className="text-lg font-semibold text-white mt-4">3. Isenção de Responsabilidade</h3>
           <p>
-            Os materiais no site MemeVerse são fornecidos 'como estão'. O MemeVerse não oferece garantias, expressas ou
+            Os materiais no site PiAdokas são fornecidos 'como estão'. O PiAdokas não oferece garantias, expressas ou
             implícitas, e, por este meio, isenta e nega todas as outras garantias, incluindo, sem limitação, garantias
             implícitas ou condições de comercialização, adequação a um fim específico ou não violação de propriedade
             intelectual.
@@ -69,28 +69,28 @@ export function TermsPopup({ onClose }: TermsPopupProps) {
 
           <h3 className="text-lg font-semibold text-white mt-4">4. Limitações</h3>
           <p>
-            Em nenhum caso o MemeVerse ou seus fornecedores serão responsáveis por quaisquer danos decorrentes do uso ou
-            da incapacidade de usar os materiais no site, mesmo que o MemeVerse ou um representante autorizado tenha
+            Em nenhum caso o PiAdokas ou seus fornecedores serão responsáveis por quaisquer danos decorrentes do uso ou
+            da incapacidade de usar os materiais no site, mesmo que o PiAdokas ou um representante autorizado tenha
             sido notificado, oralmente ou por escrito, da possibilidade de tais danos.
           </p>
 
           <h3 className="text-lg font-semibold text-white mt-4">5. Revisões e Erratas</h3>
           <p>
-            Os materiais exibidos no site MemeVerse podem incluir erros técnicos, tipográficos ou fotográficos. O
-            MemeVerse não garante que qualquer material em seu site seja preciso, completo ou atual. O MemeVerse pode
+            Os materiais exibidos no site PiAdokas podem incluir erros técnicos, tipográficos ou fotográficos. O
+            PiAdokas não garante que qualquer material em seu site seja preciso, completo ou atual. O PiAdokas pode
             fazer alterações nos materiais contidos em seu site a qualquer momento, sem aviso prévio.
           </p>
 
           <h3 className="text-lg font-semibold text-white mt-4">6. Links</h3>
           <p>
-            O MemeVerse não analisou todos os sites vinculados ao seu site e não é responsável pelo conteúdo de nenhum
-            site vinculado. A inclusão de qualquer link não implica endosso por parte do MemeVerse do site. O uso de
+            O PiAdokas não analisou todos os sites vinculados ao seu site e não é responsável pelo conteúdo de nenhum
+            site vinculado. A inclusão de qualquer link não implica endosso por parte do PiAdokas do site. O uso de
             qualquer site vinculado é por conta e risco do usuário.
           </p>
 
           <h3 className="text-lg font-semibold text-white mt-4">7. Modificações dos Termos de Uso</h3>
           <p>
-            O MemeVerse pode revisar estes termos de uso de seu site a qualquer momento, sem aviso prévio. Ao usar este
+            O PiAdokas pode revisar estes termos de uso de seu site a qualquer momento, sem aviso prévio. Ao usar este
             site, você concorda em ficar vinculado à versão atual destes Termos de Uso.
           </p>
 

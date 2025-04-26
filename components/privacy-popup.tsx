@@ -22,7 +22,7 @@ export function PrivacyPopup({ onClose }: PrivacyPopupProps) {
         <div className="space-y-4 text-gray-300">
           <p>
             Esta Política de Privacidade descreve como suas informações pessoais são coletadas, usadas e compartilhadas
-            quando você visita ou faz uma compra no MemeVerse.
+            quando você visita ou faz uma compra no PiAdokas.
           </p>
 
           <h3 className="text-lg font-semibold text-white mt-4">1. Informações Pessoais que Coletamos</h3>
