@@ -1,47 +1,22 @@
-import { Card } from "@/components/ui/card"
+import type React from "react"
 
 interface AdFallbackProps {
-  type: "horizontal" | "sidebar" | "popup"
-  className?: string
+  style?: React.CSSProperties
+  text?: string
 }
 
-export default function AdFallback({ type, className = "" }: AdFallbackProps) {
-  if (type === "horizontal") {
-    return (
-      <Card className={`bg-gray-800 border-gray-700 overflow-hidden ${className}`}>
-        <div className="aspect-[6/1] sm:aspect-[8/1] bg-gradient-to-r from-gray-700 to-gray-800 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-gray-400 text-sm">Publicidade</p>
-            <p className="text-gray-500 text-xs">Seu anúncio aqui</p>
-          </div>
-        </div>
-      </Card>
-    )
-  }
-
-  if (type === "sidebar") {
-    return (
-      <Card className={`bg-gray-800 border-gray-700 overflow-hidden ${className}`}>
-        <div className="aspect-square bg-gradient-to-r from-gray-700 to-gray-800 flex flex-col items-center justify-center">
-          <p className="text-gray-400 text-sm">Publicidade</p>
-          <p className="text-gray-500 text-xs">Seu anúncio aqui</p>
-        </div>
-      </Card>
-    )
-  }
-
-  if (type === "popup") {
-    return (
-      <div className="bg-gray-100 dark:bg-gray-700 rounded-md mb-4 overflow-hidden">
-        <div className="aspect-video flex items-center justify-center bg-gradient-to-r from-gray-700 to-gray-800">
-          <div className="text-center">
-            <p className="text-gray-400 text-sm">Publicidade</p>
-            <p className="text-gray-500 text-xs">Seu anúncio aqui</p>
-          </div>
-        </div>
+export function AdFallback({ style = { display: "block", width: "100%", height: "250px" }, text }: AdFallbackProps) {
+  return (
+    <div
+      style={style}
+      className="bg-muted/30 flex items-center justify-center text-center text-muted-foreground text-sm border border-dashed rounded-md"
+    >
+      <div>
+        <p>{text || "Publicidade"}</p>
+        <p className="text-xs mt-1">Seu anúncio aqui</p>
       </div>
-    )
-  }
-
-  return null
+    </div>
+  )
 }
+
+export default AdFallback

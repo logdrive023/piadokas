@@ -1,19 +1,18 @@
 import { NextResponse } from "next/server"
 
 export async function GET() {
-  try {
-    // Check if AdSense is enabled
-    const isEnabled = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === "true"
-    const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || ""
+  // Verificar se o AdSense está habilitado
+  const enabled = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === "true"
 
-    // Return the status
-    return NextResponse.json({
-      enabled: isEnabled,
-      clientId: isEnabled ? clientId : null,
-      message: isEnabled ? "AdSense está ativado e configurado" : "AdSense está desativado ou não configurado",
-    })
-  } catch (error) {
-    console.error("Erro ao verificar status do AdSense:", error)
-    return NextResponse.json({ error: "Erro ao verificar status do AdSense" }, { status: 500 })
-  }
+  // Obter o ID do cliente AdSense
+  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || null
+
+  // Verificar se estamos em ambiente de produção
+  const isProduction = process.env.NODE_ENV === "production"
+
+  return NextResponse.json({
+    enabled,
+    clientId,
+    isProduction,
+  })
 }
