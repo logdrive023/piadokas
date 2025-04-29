@@ -43,7 +43,7 @@ export const adSlots: Record<string, AdSlot> = {
 }
 
 export const ADSENSE_ENABLED = process.env.NEXT_PUBLIC_ADSENSE_ENABLED === "true"
-export const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || ""
+export const ADSENSE_CLIENT_ID = "4488733165053759"
 
 export const isAdSenseEnabled = () => {
   return process.env.NEXT_PUBLIC_ADSENSE_ENABLED === "true"
