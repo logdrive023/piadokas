@@ -11,7 +11,7 @@ import LinkWithLoading from "./link-with-loading"
 import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-export default function SiteHeader() {
+export function SiteHeader() {
   const [showSearch, setShowSearch] = useState(false)
   const { isLoggedIn, user, logout } = useAuth()
 
@@ -69,11 +69,11 @@ export default function SiteHeader() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
                     {user?.isAdmin && (
-                      <DropdownMenuItem className="text-white hover:bg-gray-700 cursor-pointer" asChild>
-                        <LinkWithLoading href="/admin">
+                      <DropdownMenuItem className="text-white hover:bg-gray-700 cursor-pointer">
+                        <a href="/admin" className="flex items-center w-full">
                           <Shield className="h-4 w-4 mr-2 text-amber-500" />
                           Painel Admin
-                        </LinkWithLoading>
+                        </a>
                       </DropdownMenuItem>
                     )}
                     {!user?.isAdmin && (
@@ -115,12 +115,13 @@ export default function SiteHeader() {
                       <Badge className="bg-amber-600">Administrador</Badge>
                       <span className="text-sm text-gray-300">{user.email}</span>
                     </div>
-                    <LinkWithLoading
+                    <a
                       href="/admin"
+                      className="flex items-center gap-2 text-sm text-amber-400 hover:text-amber-300 font-medium"
                     >
                       <Shield className="h-4 w-4" />
                       Painel de Administração
-                    </LinkWithLoading>
+                    </a>
                     <div className="h-px bg-gray-700" />
                   </>
                 )}
@@ -197,3 +198,5 @@ export default function SiteHeader() {
     </header>
   )
 }
+
+export default SiteHeader

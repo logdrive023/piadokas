@@ -1,4 +1,5 @@
 import { mockPosts, generateMockPost, type MockPost } from "@/lib/mock-data"
+import { apiFetch } from '@/lib/api'  // Ajuste o caminho do arquivo conforme necessário
 
 // Simular um atraso de rede
 const NETWORK_DELAY = 800
@@ -36,60 +37,88 @@ export const fetchPosts = async (
   currentPage: number
   hasMore: boolean
 }> => {
-  // Inicializar o cache se ainda não estiver inicializado
-  initializePostsCache()
+  try {
+    // Criando o corpo da requisição
+    const requestBody = {
+      page,
+      pageSize,
+      sortBy,
+      filter: filter || '',  // Se filter não for fornecido, será uma string vazia
+    };
 
-  // Simular atraso de rede
-  await new Promise((resolve) => setTimeout(resolve, NETWORK_DELAY))
+    // Chamada para a API usando apiFetch com método POST e corpo
+    const response = await apiFetch('/api/v1/pag/memes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Definindo o tipo de conteúdo como JSON
+      },
+      body: JSON.stringify(requestBody), // Passando os filtros no corpo
+    });
 
-  // Filtrar posts se necessário
-  let filteredPosts = [...postsCache]
+    // Filtrar posts com base no filtro de pesquisa (se fornecido)
+    let filteredPosts = [...response]
+    if (filter) {
+      const lowercaseFilter = filter.toLowerCase()
 
-  if (filter) {
-    const lowercaseFilter = filter.toLowerCase()
-    filteredPosts = filteredPosts.filter(
-      (post) =>
-        post.title.toLowerCase().includes(lowercaseFilter) ||
-        post.tags.some((tag) => tag.toLowerCase().includes(lowercaseFilter)) ||
-        post.author.toLowerCase().includes(lowercaseFilter),
-    )
-  }
+      // Filtrando posts por título, tags e autor (todos os filtros em minúsculo para garantir que não haja diferença de maiúsculas/minúsculas)
+      filteredPosts = filteredPosts.filter((post) => {
+        const titleMatch = post.title.toLowerCase().includes(lowercaseFilter)
+        const tagsMatch = post.tags.some((tag) => tag.toLowerCase().includes(lowercaseFilter))
+        const authorMatch = post.author.toLowerCase().includes(lowercaseFilter)
 
-  // Ordenar posts
-  switch (sortBy) {
-    case "newest":
-      filteredPosts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      break
-    case "popular":
-      filteredPosts.sort((a, b) => b.likes - a.likes)
-      break
-    case "comments":
-      filteredPosts.sort((a, b) => b.comments - a.comments)
-      break
-  }
+        return titleMatch || tagsMatch || authorMatch
+      })
+    }
 
-  // Calcular o número total de páginas
-  const totalPages = Math.ceil(filteredPosts.length / pageSize)
+    // Ordenar os posts de acordo com o critério selecionado (newest, popular ou comments)
+    switch (sortBy) {
+      case "newest":
+        filteredPosts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        break
+      case "popular":
+        filteredPosts.sort((a, b) => b.likes - a.likes)
+        break
+      case "comments":
+        filteredPosts.sort((a, b) => b.comments - a.comments)
+        break
+    }
 
-  // Calcular índices de início e fim para a página atual
-  const startIndex = (page - 1) * pageSize
-  const endIndex = Math.min(startIndex + pageSize, filteredPosts.length)
+    // Calcular a quantidade total de páginas com base no número de posts filtrados
+    const totalPosts = filteredPosts.length
+    const totalPages = Math.ceil(totalPosts / pageSize)
 
-  // Obter posts para a página atual
-  const paginatedPosts = filteredPosts.slice(startIndex, endIndex)
+    // Calcular o índice inicial e final para a página atual
+    const startIndex = (page - 1) * pageSize
+    const endIndex = Math.min(startIndex + pageSize, totalPosts)
 
-  // Verificar se há mais páginas
-  const hasMore = page < totalPages
+    // Obter os posts da página atual
+    const paginatedPosts = filteredPosts.slice(startIndex, endIndex)
 
-  // Retornar os dados
-  return {
-    posts: paginatedPosts,
-    totalPosts: filteredPosts.length,
-    totalPages,
-    currentPage: page,
-    hasMore,
+    // Verificar se há mais páginas para carregar
+    const hasMore = page < totalPages
+
+    // Retornar os dados de posts paginados
+    return {
+      posts: paginatedPosts,
+      totalPosts,
+      totalPages,
+      currentPage: page,
+      hasMore,
+    }
+  } catch (error) {
+    console.error('Erro ao buscar posts:', error)
+
+    // Caso ocorra algum erro, retornar uma estrutura vazia para evitar quebrar o código
+    return {
+      posts: [],
+      totalPosts: 0,
+      totalPages: 0,
+      currentPage: page,
+      hasMore: false,
+    }
   }
 }
+
 
 // Função para buscar posts por tag
 export const fetchPostsByTag = async (

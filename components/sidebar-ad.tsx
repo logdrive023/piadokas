@@ -1,4 +1,6 @@
-import { Card } from "@/components/ui/card"
+import AdSenseAd from "./adsense-ad"
+import { AD_SLOTS, isAdSenseEnabled } from "@/lib/adsense-config"
+import AdFallback from "./ad-fallback"
 
 interface SidebarAdProps {
   title?: string
@@ -6,14 +8,24 @@ interface SidebarAdProps {
 }
 
 export function SidebarAd({ title = "Publicidade", className = "" }: SidebarAdProps) {
-  return (
-    <Card className={`bg-gray-800 border-gray-700 overflow-hidden ${className}`}>
-      <div className="aspect-square bg-gradient-to-r from-gray-700 to-gray-800 flex flex-col items-center justify-center">
-        <p className="text-gray-400 text-sm">{title}</p>
-        <p className="text-gray-500 text-xs">Seu anúncio aqui</p>
+  const adSenseEnabled = isAdSenseEnabled()
+
+  if (adSenseEnabled) {
+    return (
+      <div className={className}>
+        <p className="text-gray-400 text-sm mb-2">{title}</p>
+        <AdSenseAd
+          slot={AD_SLOTS.SIDEBAR_SQUARE.id}
+          format="rectangle"
+          responsive={true}
+          className="w-full overflow-hidden"
+          style={{ minHeight: "250px" }}
+        />
       </div>
-    </Card>
-  )
+    )
+  }
+
+  return <AdFallback type="sidebar" className={className} />
 }
 
 export default SidebarAd

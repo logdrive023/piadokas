@@ -3,6 +3,9 @@
 import type React from "react"
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import AdSenseAd from "./adsense-ad"
+import { AD_SLOTS, isAdSenseEnabled } from "@/lib/adsense-config"
+import AdFallback from "./ad-fallback"
 
 interface PopupAdProps {
   onClose: () => void
@@ -25,6 +28,8 @@ export const PopupAd: React.FC<PopupAdProps> = ({
     buttonUrl: "#",
   },
 }) => {
+  const adSenseEnabled = isAdSenseEnabled()
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/70" onClick={onClose}></div>
@@ -44,9 +49,19 @@ export const PopupAd: React.FC<PopupAdProps> = ({
         <div className="p-6">
           <div className="mb-4 text-center">
             <p className="text-gray-600 dark:text-gray-300 mb-4">{adData.subtitle}</p>
-            <div className="bg-gray-100 dark:bg-gray-700 rounded-md mb-4 overflow-hidden">
-              <img src={adData.imageUrl || "/placeholder.svg"} alt="Anúncio" className="w-full h-auto object-cover" />
-            </div>
+
+            {adSenseEnabled ? (
+              <AdSenseAd
+                slot={AD_SLOTS.POPUP_AD.id}
+                format="rectangle"
+                responsive={true}
+                className="w-full overflow-hidden mb-4"
+                style={{ minHeight: "250px" }}
+              />
+            ) : (
+              <AdFallback type="popup" />
+            )}
+
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Anúncio</p>
           </div>
 

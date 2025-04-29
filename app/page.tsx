@@ -17,6 +17,7 @@ import { fetchPosts, fetchPostsByTag, fetchPopularTags, fetchTrendingPosts } fro
 import type { MockPost } from "@/lib/mock-data"
 import { X } from "lucide-react"
 import Link from "next/link"
+import InFeedAd from "@/components/in-feed-ad"
 
 export default function Home() {
   const [posts, setPosts] = useState<MockPost[]>([])
@@ -46,22 +47,22 @@ export default function Home() {
     return () => clearTimeout(timer)
   }, [stopLoading])
 
-    // Carregar tags populares
+  // Carregar tags populares
   useEffect(() => {
-     const loadPopularTags = async () => {
-       setLoadingTags(true)
-       try {
-          const tags = await fetchPopularTags(10) // Limitar a 10 tags
-          setPopularTags(tags)
-        } catch (error) {
-          console.error("Erro ao carregar tags populares:", error)
-        } finally {
-          setLoadingTags(false)
-        }
+    const loadPopularTags = async () => {
+      setLoadingTags(true)
+      try {
+        const tags = await fetchPopularTags(10) // Limitar a 10 tags
+        setPopularTags(tags)
+      } catch (error) {
+        console.error("Erro ao carregar tags populares:", error)
+      } finally {
+        setLoadingTags(false)
       }
-  
-     loadPopularTags()
-    }, [])
+    }
+
+    loadPopularTags()
+  }, [])
 
   // Carregar memes em alta
   useEffect(() => {
@@ -114,8 +115,8 @@ export default function Home() {
     }
   }
 
-   // Função para carregar posts por tag
-   const loadPostsByTag = async (tag: string, pageNumber: number, isInitialLoad = false) => {
+  // Função para carregar posts por tag
+  const loadPostsByTag = async (tag: string, pageNumber: number, isInitialLoad = false) => {
     if (!isScrollingEnabled && !isInitialLoad) return
 
     setLoading(true)
@@ -152,11 +153,11 @@ export default function Home() {
 
   // Função para lidar com clique em uma tag
   const handleTagClick = (tag: string) => {
-     setActiveTag(tag)
-     // Resetar para a primeira página
-     setPage(1)
-     // Rolar para o topo
-     window.scrollTo({ top: 0, behavior: "smooth" })
+    setActiveTag(tag)
+    // Resetar para a primeira página
+    setPage(1)
+    // Rolar para o topo
+    window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   // Função para limpar o filtro de tag
@@ -219,6 +220,7 @@ export default function Home() {
             </Button>
           </div>
         )}
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-8">
@@ -238,7 +240,7 @@ export default function Home() {
                       <MemePost {...post} />
                     )}
                     {/* Insert horizontal ad after every 3 posts */}
-                    {(index + 1) % 3 === 0 && <HorizontalAd />}
+                    {(index + 1) % 3 === 0 && <InFeedAd index={Math.floor(index / 3)} />}
                   </React.Fragment>
                 ))}
               </div>
@@ -290,14 +292,14 @@ export default function Home() {
           <div className="lg:col-span-4 space-y-6">
             <SidebarAd />
 
-            {/* Online Readers Section 
+            {/* Online Readers Section
             <div className="bg-gray-800 rounded-lg p-4">
               <OnlineReaders count={142} />
-            </div>*/}
+            </div> */}
 
             {/* Crypto Donation Section */}
             <CryptoDonationSection />
-            
+
             {/* Memes em alta */}
             <div className="bg-gray-800 rounded-lg p-4">
               <h2 className="text-xl font-bold text-white mb-4">Memes em alta</h2>
@@ -308,7 +310,7 @@ export default function Home() {
               ) : (
                 <div className="space-y-4">
                   {trendingPosts.map((post) => (
-                    <LinkWithLoading href={`/meme/${post.id}`} key={`trending-${post.id}`} className="block">
+                    <Link href={`/meme/${post.id}`} key={`trending-${post.id}`} className="block">
                       <div className="flex items-center gap-3 hover:bg-gray-700 p-2 rounded-lg transition-colors">
                         <div className="w-16 h-16 bg-gray-700 rounded overflow-hidden flex-shrink-0">
                           <img
@@ -322,7 +324,7 @@ export default function Home() {
                           <p className="text-xs text-gray-400 mt-1">{post.likes} curtidas</p>
                         </div>
                       </div>
-                    </LinkWithLoading>
+                    </Link>
                   ))}
                 </div>
               )}
@@ -342,24 +344,24 @@ export default function Home() {
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500"></div>
                 </div>
               ) : (
-              <div className="flex flex-wrap gap-2">
-              {popularTags.map(({ tag, count }) => (
-                  <Button
-                    key={tag}
-                    variant="outline"
-                    size="sm"
-                    className={`${
-                      activeTag === tag
-                        ? "bg-purple-700 hover:bg-purple-800 text-white border-purple-600"
-                        : "bg-gray-700 hover:bg-gray-600 text-white border-gray-600"
-                    }`}
-                    onClick={() => handleTagClick(tag)}
-                  >
-                    #{tag}
-                    <span className="ml-1 text-xs opacity-70">({count})</span>
-                  </Button>
-                ))}
-              </div>
+                <div className="flex flex-wrap gap-2">
+                  {popularTags.map(({ tag, count }) => (
+                    <Button
+                      key={tag}
+                      variant="outline"
+                      size="sm"
+                      className={`${
+                        activeTag === tag
+                          ? "bg-purple-700 hover:bg-purple-800 text-white border-purple-600"
+                          : "bg-gray-700 hover:bg-gray-600 text-white border-gray-600"
+                      }`}
+                      onClick={() => handleTagClick(tag)}
+                    >
+                      #{tag}
+                      <span className="ml-1 text-xs opacity-70">({count})</span>
+                    </Button>
+                  ))}
+                </div>
               )}
             </div>
           </div>

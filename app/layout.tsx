@@ -1,59 +1,41 @@
 import type React from "react"
-import "./globals.css"
+import "@/app/globals.css"
+import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
-import SiteHeader from "@/components/site-header"
-import PopupProvider from "@/components/popup-provider"
-import { SiteFooter } from "@/components/site-footer"
 import { AuthProvider } from "@/lib/auth-context"
+import  PopupProvider  from "@/components/popup-provider"
 import { LoadingProvider } from "@/components/loading-provider"
-import ScrollToTop from "@/components/scroll-to-top"
 import { Toaster } from "@/components/ui/toaster"
+import AdSenseScript from "@/components/adsense-script"
+import { SiteHeader } from "@/components/site-header"
+import { SiteFooter } from "@/components/site-footer"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata = {
-  title: "PiAdokas - O melhor site de memes do Brasil",
-  description: "Compartilhe, curta e comente os melhores memes da internet.",
-    generator: 'PiAdokas'
+export const metadata: Metadata = {
+  title: "pIAdokas - Compartilhe e descubra os melhores memes",
+  description: "Uma plataforma social para compartilhar e descobrir os melhores memes da internet.",
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${inter.className} bg-gray-900 text-white antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <body className={`${inter.className} min-h-screen bg-background antialiased flex flex-col`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
-            <LoadingProvider>
-              <ScrollToTop />
-              <PopupProvider
-                adConfig={{
-                  initialDelay: 45000, // 45 segundos para o primeiro popup
-                  frequency: 300000, // 5 minutos entre popups
-                  enabled: true,
-                  sessionLimit: 3, // Máximo de 3 popups por sessão
-                  adData: {
-                    title: "Publicidade",
-                    subtitle: "Os melhores produtos para você!",
-                    imageUrl: "/vibrant-sale-banner.png",
-                    buttonText: "Ver oferta",
-                    buttonUrl: "#",
-                  },
-                }}
-              >
-                <div className="min-h-screen flex flex-col">
+            <PopupProvider>
+              <LoadingProvider>
+                <AdSenseScript />
+                <div className="flex flex-col min-h-screen">
                   <SiteHeader />
-                  <div className="pt-[72px] md:pt-[64px] flex-grow">{children}</div>
+                  <main className="flex-1 pt-14">{children}</main>
                   <SiteFooter />
                 </div>
-              </PopupProvider>
-            </LoadingProvider>
-            <Toaster />
+              </LoadingProvider>
+            </PopupProvider>
           </AuthProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
